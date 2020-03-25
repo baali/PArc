@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-import requests
 import sys
 
-from requests_html import HTML
 from urllib.parse import urlparse
 from warcio.capture_http import capture_http
-from warcio.archiveiterator import ArchiveIterator
+
+# warcio Documentation STRESSES to import requests after capture_http
+import requests
+from requests_html import HTML
 
 if __name__ == "__main__":
     warc_file = '{}.warc.gz'.format(sys.argv[2])
