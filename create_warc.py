@@ -13,11 +13,12 @@ if __name__ == "__main__":
     with capture_http(warc_file):
         response = requests.get(sys.argv[1])
         html = HTML(html=response.text, url=response.url)
-        js_scripts = [elem.attrs['src'] for elem in html.find('script') if 'src' in elem.attrs]
+        js_scripts = set([elem.attrs['src'] for elem in html.find('script') if 'src' in elem.attrs])
         styles = [elem.attrs['src'] for elem in html.find('style') if 'src' in elem.attrs]
         styles += [elem.attrs['href'] for elem in html.find('link') if 'href' in elem.attrs]
-        images = [elem.attrs['src'] for elem in html.find('img') if 'src' in elem.attrs]
-        for static_resource in js_scripts+styles+images:
+        style = set(styles)
+        images = set([elem.attrs['src'] for elem in html.find('img') if 'src' in elem.attrs])
+        for static_resource in set.union(js_scripts, styles, images):
             if not urlparse(static_resource).scheme:
                 static_resource = 'https:'+static_resource
             print('downloading resource: {}'.format(static_resource))
