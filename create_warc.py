@@ -9,6 +9,8 @@ import requests
 from requests_html import HTML
 
 def check_url_similarity(url_1, url_2):
+    '''Method of compare two URLs to identify if they are same or not.
+    Returns bool: True/False based on comparison'''
     def check_path(path_1, path_2):
         # handles cases: cases where path are similar of have a trailing /
         if path_1 == path_2:
@@ -34,8 +36,6 @@ def check_url_similarity(url_1, url_2):
            'www.'+netloc_1 == netloc_2:
             if check_path(path_1, path_2):
                 return True
-        # TODO:
-        # 1. add case for http and https distinction
     return False
 
 if __name__ == "__main__":
