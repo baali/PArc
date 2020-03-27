@@ -25,16 +25,14 @@ def check_url_similarity(url_1, url_2):
         if url_1 == url_2:
             return True
     else:
-        netloc_1 = urlparse(url_1).netloc
-        netloc_2 = urlparse(url_2).netloc
-        path_1 = urlparse(url_1).path
-        path_2 = urlparse(url_2).path
-        if netloc_1 == netloc_2:
-            if check_path(path_1, path_2):
+        url_1_struct = urlparse(url_1)
+        url_2_struct = urlparse(url_2)
+        if url_1_struct.netloc == url_2_struct.netloc:
+            if check_path(url_1_struct.path, url_2_struct.path):
                 return True
-        if netloc_1 == 'www.'+netloc_2 or \
-           'www.'+netloc_1 == netloc_2:
-            if check_path(path_1, path_2):
+        if url_1_struct.netloc == 'www.'+url_2_struct.netloc or \
+           'www.'+url_1_struct.netloc == url_2_struct.netloc:
+            if check_path(url_1_struct.path, url_2_struct.path):
                 return True
     return False
 
