@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import re
 
 from urllib.parse import urlparse
 from warcio.capture_http import capture_http
@@ -50,8 +51,27 @@ def find_img_urls(html):
 
 def find_css_urls(html):
     '''Find urls to all stylesheets used in the HTML'''
-    css_urls = [elem.attrs['src'] for elem in html.find('style') if 'src' in elem.attrs]
-    css_urls += [elem.attrs['href'] for elem in html.find('link') if 'href' in elem.attrs]
+    # 
+    css_urls = []
+    # For linked CSS, syntax is: <link href="css_file.css" rel="stylesheet" type="text/css" media="all">
+    for elem in html.find('link'):
+        if 'stylesheet' in elem.attrs.get('rel'):
+            if 'href' in elem.attrs:
+                css_urls.append(elem.attrs['href'])
+    # syntax: <link href="css_file.css" rel="stylesheet" type="text/css" media="all">
+    for elem in html.find('style'):
+        if 'src' in elem.attrs:
+            print('src inside style ', elem.html)
+            css_urls.append(elem.attrs['src'])
+
+    # TODO: Handle imported CSS, syntax is: <style type="text/css" media="all">\n@import url("//www.mygov.in/modules/system/system.base.css?q7y7yf");</style>
+    for elem in html.find('style'):
+        # url[1:-1] is to avoid redundant quotes around url
+        for url in re.findall(r'url\((.*?)\)', elem.html):
+            if url[0] == '"' or url[0] == "'":
+                css_urls.append(url[1:-1])
+            else:
+                css_urls.append(url)
     print("Found {} urls for CSS files".format(len(css_urls)))
     return css_urls
 
