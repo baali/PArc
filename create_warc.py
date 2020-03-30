@@ -64,9 +64,15 @@ def get_all_static_urls(html):
     return static_urls
 
 
+def filter_records(request, response, recorder):
+    if response.http_headers.get_statuscode() != '200':
+        print("skipping {}".format(request.http_headers.get_statuscode()))
+        return None, None
+    return request, response
+
 if __name__ == "__main__":
     warc_file = '{}.warc.gz'.format(sys.argv[2])
-    with capture_http(warc_file):
+    with capture_http(warc_file, filter_records):
         response = requests.get(sys.argv[1])
         html = HTML(html=response.text, url=response.url)
         static_resource_urls = get_all_static_urls(html)
