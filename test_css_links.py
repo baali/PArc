@@ -55,5 +55,22 @@ class TestCSSLink(unittest.TestCase):
         self.assertTrue(css_links)
         self.assertEqual(len(css_links), 4)
         
+    def test_link_href_css(self):
+        src = '''
+<!DOCTYPE html>
+<html data-ng-app="site_stats_display" xml:lang="en">
+  <head>
+    <link href="default.css" rel="stylesheet" title="Default Style">
+    <link href="fancy.css" rel="alternate stylesheet" title="Fancy">
+    <link href="basic.css" rel="alternate stylesheet" title="Basic">
+  </head>
+  <body>
+  </body>
+</html>
+'''
+        html = HTML(html=src)
+        css_links = find_css_urls(html)
+        self.assertTrue(css_links)
+        self.assertEqual(len(css_links), 3)
 if __name__ == '__main__':
     unittest.main()
