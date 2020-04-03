@@ -54,6 +54,27 @@ class TestCSSLink(unittest.TestCase):
         css_links = find_css_urls(html)
         self.assertTrue(css_links)
         self.assertEqual(len(css_links), 4)
+
+    def test_link_import_css_for_links_without_quote(self):
+        src = '''
+<!DOCTYPE html>
+<html data-ng-app="site_stats_display" xml:lang="en">
+  <head>
+    <style type="text/css" media="all">
+      @import url(//www.mygov.in/modules/system/system.base.css?q7y7yf);
+      @import url(//www.mygov.in/modules/system/system.menus.css?q7y7yf);
+      @import url(//www.mygov.in/modules/system/system.messages.css?q7y7yf);
+      @import url(//www.mygov.in/modules/system/system.theme.css?q7y7yf);
+    </style>
+  </head>
+  <body>
+  </body>
+</html>
+'''
+        html = HTML(html=src)
+        css_links = find_css_urls(html)
+        self.assertTrue(css_links)
+        self.assertEqual(len(css_links), 4)
         
     def test_link_href_css(self):
         src = '''
@@ -72,5 +93,6 @@ class TestCSSLink(unittest.TestCase):
         css_links = find_css_urls(html)
         self.assertTrue(css_links)
         self.assertEqual(len(css_links), 3)
+
 if __name__ == '__main__':
     unittest.main()

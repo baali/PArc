@@ -51,26 +51,28 @@ def find_img_urls(html):
 
 def find_css_urls(html):
     '''Find urls to all stylesheets used in the HTML'''
-    # 
     css_urls = []
-    # For linked CSS, syntax is: <link href="css_file.css" rel="stylesheet" type="text/css" media="all">
+    # linked CSS that uses link tag. syntax: <link href="css_file.css" rel="stylesheet" type="text/css" media="all">
     for elem in html.find('link'):
         if 'stylesheet' in elem.attrs.get('rel'):
             if 'href' in elem.attrs:
                 css_urls.append(elem.attrs['href'])
-    # syntax: <link href="css_file.css" rel="stylesheet" type="text/css" media="all">
+    # Linked CSS that uses style tag. syntax: <link href="css_file.css" rel="stylesheet" type="text/css" media="all">
     for elem in html.find('style'):
         if 'src' in elem.attrs:
             print('src inside style ', elem.html)
             css_urls.append(elem.attrs['src'])
 
-    # TODO: Handle imported CSS, syntax is: <style type="text/css" media="all">\n@import url("//www.mygov.in/modules/system/system.base.css?q7y7yf");</style>
+    # Linked CSS that uses style tag and uses @import. syntax: <style type="text/css" media="all">\n@import url("//www.mygov.in/modules/system/system.base.css?q7y7yf");</style>
     for elem in html.find('style'):
-        # url[1:-1] is to avoid redundant quotes around url
         for url in re.findall(r'url\((.*?)\)', elem.html):
             if url[0] == '"' or url[0] == "'":
+                # To avoid redundant quotes around url: 
                 css_urls.append(url[1:-1])
             else:
+                # To cover cases where link is not part of quotes:
+                # url(https://www.hindustantimes.com/images/app-images/2019/4/authors/footer-sprite.svg)
+                # This seems to be happening with HindustanTimes pages
                 css_urls.append(url)
     print("Found {} urls for CSS files".format(len(css_urls)))
     return css_urls
